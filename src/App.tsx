@@ -1,93 +1,43 @@
-import { useEffect, useState } from "react";
+import { Canvas } from "@react-three/fiber";
 
-interface boardType {
-  id: number;
-  value: number;
-}
+const App = () => {
+  const gameBox = Array.from({ length: 49 }, (_, index) => 0);
 
-function App() {
-  const [board, setBoard] = useState<boardType[] | null>(null);
-  const [snake, setSnake] = useState<boardType | null>(null);
-
-  const createBoard = () => {
-    const randomNumber = Math.floor(Math.random() * 400);
-    const makeBoard = [];
-    for (let i = 0; i < 400; i++) {
-      if (randomNumber === i) {
-        makeBoard.push({ id: i, value: 1 });
-      } else {
-        makeBoard.push({ id: i, value: 0 });
-      }
-    }
-    setBoard(makeBoard);
+  const handleKeyDown = (event) => {
+    console.log(event);
   };
-
-  const listenKeyBoard = (e) => {
-    if (e.key === "Enter") {
-      startGame();
-    }
-  };
-
-  const startGame = () => {
-    setInterval(() => {
-      if (snake) {
-        const move = board?.map((b) => {
-          if (b.id === snake.id - 1) {
-            return {
-              ...b,
-              value: 1,
-            };
-          } else {
-            return {
-              ...b,
-              value: 0,
-            };
-          }
-        });
-      }
-    }, 1000);
-  };
-
-  useEffect(() => {
-    createBoard();
-  }, []);
-
-  useEffect(() => {
-    const findSnake = board?.find((b) => {
-      if (b.value === 1) {
-        return b;
-      }
-    });
-    if (findSnake) {
-      setSnake(findSnake);
-    }
-  }, [board]);
 
   return (
-    <div
-      onKeyDown={listenKeyBoard}
-      tabIndex={0}
-      className="w-full h-screen bg-neutral-900 flex justify-center items-center"
-    >
-      <div className="w-80 h-80 bg-neutral-200 flex flex-wrap">
-        {board !== null &&
-          board.map((b) => {
-            return (
-              <div
-                key={b.id}
-                className={`w-4 h-4 ${
-                  b.value === 1
-                    ? "bg-green-500"
-                    : b.value === 2
-                    ? "bg-red-500"
-                    : "bg-transparent"
-                } text-xs`}
-              ></div>
-            );
-          })}
-      </div>
+    <div>
+      <Canvas
+        onKeyDown={handleKeyDown}
+        style={{ backgroundColor: "#22c55e", height: "100dvh" }}
+        camera={{
+          fov: 75,
+          near: 0.1,
+          far: 1000,
+          position: [0, -4, 5],
+          aspect: window.innerWidth / window.innerHeight,
+        }}
+      >
+        {gameBox.map((l, index) => {
+          return (
+            <mesh
+              key={index}
+              position={[-3 + (index % 7), 3 - Math.floor(index / 7), 0]}
+            >
+              <planeGeometry args={[1, 1]} />
+              <meshBasicMaterial wireframe />
+            </mesh>
+          );
+        })}
+        <mesh position={[-3, 3, 0.5]}>
+          <boxGeometry args={[1, 1]} />
+          <meshBasicMaterial />
+        </mesh>
+      </Canvas>
     </div>
   );
-}
+};
 
 export default App;
