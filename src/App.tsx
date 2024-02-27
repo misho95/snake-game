@@ -1,16 +1,33 @@
+import { KeyboardControls, KeyboardControlsEntry } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import Snake from "./snake";
+import { useMemo } from "react";
+
+export enum Controls {
+  forward = "forward",
+  back = "back",
+  left = "left",
+  right = "right",
+  jump = "jump",
+}
 
 const App = () => {
-  const gameBox = Array.from({ length: 49 }, (_, index) => 0);
+  const gameBox = Array.from({ length: 49 }, (_) => 0);
 
-  const handleKeyDown = (event) => {
-    console.log(event);
-  };
+  const map = useMemo<KeyboardControlsEntry<Controls>[]>(
+    () => [
+      { name: Controls.forward, keys: ["ArrowUp", "KeyW"] },
+      { name: Controls.back, keys: ["ArrowDown", "KeyS"] },
+      { name: Controls.left, keys: ["ArrowLeft", "KeyA"] },
+      { name: Controls.right, keys: ["ArrowRight", "KeyD"] },
+      { name: Controls.jump, keys: ["Space"] },
+    ],
+    []
+  );
 
   return (
-    <div>
+    <KeyboardControls map={map}>
       <Canvas
-        onKeyDown={handleKeyDown}
         style={{ backgroundColor: "#22c55e", height: "100dvh" }}
         camera={{
           fov: 75,
@@ -31,12 +48,9 @@ const App = () => {
             </mesh>
           );
         })}
-        <mesh position={[-3, 3, 0.5]}>
-          <boxGeometry args={[1, 1]} />
-          <meshBasicMaterial />
-        </mesh>
+        <Snake />
       </Canvas>
-    </div>
+    </KeyboardControls>
   );
 };
 
